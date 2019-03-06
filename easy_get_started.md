@@ -36,7 +36,7 @@ from indy import pool, wallet, did, crypto
 The following also uses three helper functions:
 1. [get_genesis_tx_path()](https://github.com/hyperledger/indy-sdk/blob/master/samples/python/src/utils.py)
 2. [wallet_credentials()](https://github.com/hyperledger/indy-sdk/blob/master/samples/python/src/getting_started.py)
-3. 2. [send_nym()](https://github.com/hyperledger/indy-sdk/blob/master/samples/python/src/getting_started.py)
+3. [send_nym()](https://github.com/hyperledger/indy-sdk/blob/master/samples/python/src/getting_started.py)
 
 Import or copy these functions into your file.
 
