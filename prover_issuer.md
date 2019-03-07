@@ -2,7 +2,7 @@
 
 This is a follow-on guide from `easy_get_started.md`.
 
-Your prover and issuer actors should be onboarded and a secure channel should be set up between them - send a connection request from your issuer to prover.
+Your prover and issuer actors should be onboarded and a secure channel should be set up between them - send a connection request from your issuer to your prover.
 
 Imports:
 ```python

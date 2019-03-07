@@ -2,12 +2,12 @@
 
 This is a follow-on guide from `easy_get_started.md` and `prover_issuer.md.`
 
-Your prover and verifier actors should be onboarded and a secure channel should be set up between them - send a connection request from your verfier to prover. Your prover should have a credential stored in their wallet.
+Your prover and verifier actors should be onboarded and a secure channel should be set up between them - send a connection request from your verifier to your prover. Your prover should have a credential stored in their wallet.
 
 Imports:
 ```python
-from indy import anoncreds, ledger, did, crypto
-import json, time
+from indy import anoncreds, did, crypto
+import json
 ```
 
 
