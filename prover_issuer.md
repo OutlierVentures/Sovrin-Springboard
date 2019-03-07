@@ -5,7 +5,7 @@ This is a follow-on guide from `easy_get_started.md`.
 Your prover and issuer actors should be onboarded and a secure channel should be set up between them - send a connection request from your issuer to prover.
 
 Imports:
-```
+```python
 from indy import anoncreds, ledger, wallet, did, crypto
 import json, time
 ```
@@ -20,7 +20,7 @@ The following assumes uses three helper functions:
 Credentials are created by the issuer.
 
 1. Define a credential schema JSON and register it.
-    ```
+    ```python
     schema = {
         "name": "Degree-Certificate",
         "version": "1.4",
@@ -33,7 +33,7 @@ Credentials are created by the issuer.
     Note that version numbers for schema must be floats, not ints.
     
 2. Get the schema from the ledger, create a credential definition for your schema and register this.
-    ```
+    ```python
     cred_def = {
         'tag': 'TAG1',
         'type': 'CL',
@@ -53,7 +53,7 @@ Credentials are created by the issuer.
 All communication as established in the `easy_getting_started.md` guide is encrypted and authenticated – see encryptions and decryptions below.
 
 1. The issuer offers a credential to the prover.
-    ```
+    ```python
     issuer[schema_name + '_cred_offer'] = await anoncreds.issuer_create_credential_offer(issuer['wallet'], issuer[schema_name + '_cred_def_id'])
     offer = {
         'name': schema_name,
@@ -65,7 +65,7 @@ All communication as established in the `easy_getting_started.md` guide is encry
     Send the authcrypted message bytes to the prover in your chosen manner.
 
 2. The prover receives the credential offer and replies with a credential request.
-    ```
+    ```python
     prover['issuer_key_for_prover'], _, json_cred_offer = await auth_decrypt(prover['wallet'], prover['issuer_key'], prover['authcrypted_cred_offer'])
     schema_name = json_cred_offer['name']
     prover[schema_name + '_cred_offer'] = json_cred_offer['cred_offer']
@@ -92,6 +92,22 @@ All communication as established in the `easy_getting_started.md` guide is encry
     Send the authcrypted message bytes to the issuer in your chosen manner.
 
 3. The issuer receives the credential request, creates and sends the full credential.
+    ```python
+    issuer['prover_key_for_issuer'], _, cred_request = await auth_decrypt(issuer['wallet'], issuer['prover_key'], issuer['authcrypted_cred_request'])
+    issuer[schema_name + '_cred'], _, _ = await anoncreds.issuer_create_credential(issuer['wallet'], issuer[schema_name + '_cred_offer'], cred_request['request'], cred_request['values'], None, None)
+    authcrypted_cred = await crypto.auth_crypt(issuer['wallet'], issuer['prover_key'], issuer['prover_key_for_issuer'], issuer[schema_name + '_cred'].encode('utf-8'))
+    ```
+    Send the authcrypted message bytes to the prover in your chosen manner.
 
 4. The prover receives the credential and stores it in their wallet.
-    
+    ```python
+    _, prover[schema_name + '_cred'], _ = await auth_decrypt(prover['wallet'], prover['issuer_key'], prover['authcrypted_cred'])
+    _, prover[schema_name + '_cred_def'] = await get_cred_def(prover['pool'], prover['issuer_did'], prover[schema_name + '_cred_def_id'])
+    await anoncreds.prover_store_credential(prover['wallet'], None, prover[schema_name + '_cred_request_metadata'], prover[schema_name + '_cred'], prover[schema_name + '_cred_def'], None)
+    ```    
+
+## Next steps
+
+For credential proof and verification, see `prover_verifier.md`.
+
+A first stop for technical questions is the [Indy-SDK rocket chat](https://chat.hyperledger.org/channel/indy-sdk).

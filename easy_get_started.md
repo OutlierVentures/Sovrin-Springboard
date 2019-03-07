@@ -162,11 +162,10 @@ For a full Onboarding, e.g. using Steward Alice to onboard Bob, simply add two s
     From this point Bob is a trust anchor on the ledger and can onboard people in the same way that Alice can.
 
 
-### Next steps
+## Next steps
 
 For issuing and storing credentials, see `prover_issuer.md`.
 
 For credential proof and verification, see `prover_verifier.md`.
 
 A first stop for technical questions is the [Indy-SDK rocket chat](https://chat.hyperledger.org/channel/indy-sdk).
-
