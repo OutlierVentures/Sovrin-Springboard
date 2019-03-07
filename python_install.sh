@@ -70,8 +70,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     export LIBRARY_PATH=$(pwd)/target/debug
     cd ../cli
     cargo build
-    export DYLD_LIBRARY_PATH=$LIBRARY_PATH
-    export LD_LIBRARY_PATH=$LIBRARY_PATH
+    echo 'export DYLD_LIBRARY_PATH='$LIBRARY_PATH'
+export LD_LIBRARY_PATH='$LIBRARY_PATH >> ~/.bash_profile 
     cd ../..
 fi
 pip3 install python3-indy 
