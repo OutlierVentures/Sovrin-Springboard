@@ -28,9 +28,20 @@ For issuing and storing credentials, see `prover_issuer.md`.
 
 For credential proof and verification, see `prover_verifier.md`.
 
-SDK imports for the following:
+Imports and argument parser setup:
 ```
-from indy import pool, wallet, did, crypto
+from indy import ledger, pool, wallet, did, crypto
+from indy.error import ErrorCode, IndyError
+import json, argparse
+from pathlib import Path
+from tempfile import gettempdir
+parser = argparse.ArgumentParser(description='Run python getting-started scenario (Prover/Issuer)')
+parser.add_argument('-t', '--storage_type', help='load custom wallet storage plug-in')
+parser.add_argument('-l', '--library', help='dynamic library to load for plug-in')
+parser.add_argument('-e', '--entrypoint', help='entry point for dynamic library')
+parser.add_argument('-c', '--config', help='entry point for dynamic library')
+parser.add_argument('-s', '--creds', help='entry point for dynamic library')
+args = parser.parse_args()
 ```
 
 The following also uses three helper functions:
