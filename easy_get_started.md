@@ -66,7 +66,7 @@ Set up the pool data structure on each actor's machine:
 pool_ = { 'name': [PICK_A_NAME] }
 pool_['genesis_txn_path'] = get_pool_genesis_txn_path(pool_['name'])
 pool_['config'] = json.dumps({"genesis_txn": str(pool_['genesis_txn_path'])})
-await pool.set_protocol_version(2) # Set version number according to pool - 2 is current for local.
+await pool.set_protocol_version(2) # Set version number - 2 is for pools running indy-node 1.4+
 await pool.create_pool_ledger_config(pool_['name'], pool_['config'])
 pool_['handle'] = await pool.open_pool_ledger(pool_['name'], None)
 ```
@@ -107,7 +107,7 @@ did, key = await did.create_and_store_my_did(to['wallet'], "{}")
 
 The following assumes you have a way to transmit data between agents, for example HTTP POSTing. Particularly sensitive data is pairwise encrypted on Hyperledger Indy but it is a good idea to use a secure scheme like HTTPS in addition.
 
-1. Alice sends a connection request to Bov:
+1. Alice sends a connection request to Bob:
     ```
     alice['bob_did'], alice['bob_key'] = await did.create_and_store_my_did(alice['wallet'], "{}")
     await send_nym(alice['pool'], alice['wallet'], alice['did'], alice['alice_bob_did'], alice['alice_bob_key'], None)
@@ -149,7 +149,7 @@ For a full Onboarding, e.g. using Steward Alice to onboard Bob, simply add two s
         'did': bob['did'],
         'verkey': bob['key']
     })
-    bob['authcrypted_did_info'] = await crypto.auth_crypt(bob['wallet'], bob['alice_key'], bob['alice_bob_verkey'], bob['did_info'].encode('utf-8'))
+    authcrypted_did_info = await crypto.auth_crypt(bob['wallet'], bob['alice_key'], bob['alice_bob_verkey'], bob['did_info'].encode('utf-8'))
     ```
     Send the authcrypted message bytes to Alice in your chosen manner.
 
