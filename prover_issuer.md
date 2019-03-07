@@ -6,7 +6,7 @@ Your prover and issuer actors should be onboarded and a secure channel should be
 
 Imports:
 ```python
-from indy import anoncreds, ledger, wallet, did, crypto
+from indy import anoncreds, ledger, did, crypto
 import json, time
 ```
 
@@ -75,7 +75,7 @@ All communication as established in the `easy_getting_started.md` guide is encry
     prover['master_secret_id'] = await anoncreds.prover_create_master_secret(prover['wallet'], None) # Allows prover to use credential
     prover['issuer_cred_def_id'], prover['issuer_cred_def'] = await get_cred_def(prover['pool'], prover['issuer_did'], authdecrypted_cred_offer['cred_def_id'])
     prover[schema_name + '_cred_request'], prover[schema_name + '_cred_request_metadata'] = await anoncreds.prover_create_credential_req(prover['wallet'], prover['issuer_did'], prover[schema_name + '_cred_offer'], prover['issuer_cred_def'], prover['master_secret_id'])
-    cred_request = {
+    cred_request = json.dumps({
         'request': prover[schema_name + '_cred_request'],
         'values': {
             "first_name": {"raw": "Jason", "encoded": "1139481716457488690172217916278103335"},
@@ -86,7 +86,7 @@ All communication as established in the `easy_getting_started.md` guide is encry
             "year": {"raw": "2015", "encoded": "2015"},
             "average": {"raw": "5", "encoded": "5"}
         } # Encoding is arbitrary
-    }
+    })
     authcrypted_cred_request = await crypto.auth_crypt(prover['wallet'], prover['issuer_key'], prover['issuer_key_for_prover'], json.dumps(cred_request).encode('utf-8'))
     ```
     Send the authcrypted message bytes to the issuer in your chosen manner.
