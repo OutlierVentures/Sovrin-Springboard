@@ -29,7 +29,7 @@ For issuing and storing credentials, see `prover_issuer.md`.
 For credential proof and verification, see `prover_verifier.md`.
 
 Imports and argument parser setup:
-```
+```python
 from indy import ledger, pool, wallet, did, crypto
 from indy.error import ErrorCode, IndyError
 import json, argparse
@@ -62,7 +62,7 @@ docker run -itd -p 9701-9708:9701-9708 indy_pool
 To stop this pool at any time: `docker stop $(docker ps | grep oef-core-image | awk '{ print $1 }')`
 
 Set up the pool data structure on each actor's machine:
-```
+```python
 pool_ = { 'name': [PICK_A_NAME] }
 pool_['genesis_txn_path'] = get_pool_genesis_txn_path(pool_['name'])
 pool_['config'] = json.dumps({"genesis_txn": str(pool_['genesis_txn_path'])})
@@ -75,7 +75,7 @@ pool_['handle'] = await pool.open_pool_ledger(pool_['name'], None)
 
 Actors are instantiated from standard wallets. Pass in your wallet address and key as environment variables. For local testing these can be any string as long as addresses are unique.
 
-```
+```python
 actor = {
     'name': [PICK_A_NAME],
     'wallet_config': json.dumps({'id': [ADDRESS]}),
@@ -90,7 +90,7 @@ actor['wallet'] = await wallet.open_wallet(wallet_config("open", actor['wallet_c
 For pointers on nifty error handling you can take a look [here](https://github.com/hyperledger/indy-sdk/blob/master/samples/python/src/getting_started.py).
 
 For local pools you will need to instantiate a _Steward_ actor from a seed. Just append this: 
-```
+```python
 actor['did_info'] = json.dumps({'seed': '000000000000000000000000Steward1'})
 actor['did'], actor['key'] = await did.create_and_store_my_did(actor['wallet'], actor['did_info'])
 ```
@@ -101,14 +101,14 @@ The Steward can be used to onboard any other actors you have, which is simply th
 ### Secure channel setup
 
 Indy secure channels are pairwise. You can at any time generate a new DID-keypair for each connection using:
-```
+```python
 did, key = await did.create_and_store_my_did(to['wallet'], "{}")
 ```
 
 The following assumes you have a way to transmit data between agents, for example HTTP POSTing. Particularly sensitive data is pairwise encrypted on Hyperledger Indy but it is a good idea to use a secure scheme like HTTPS in addition.
 
 1. Alice sends a connection request to Bob:
-    ```
+    ```python
     alice['bob_did'], alice['bob_key'] = await did.create_and_store_my_did(alice['wallet'], "{}")
     await send_nym(alice['pool'], alice['wallet'], alice['did'], alice['alice_bob_did'], alice['alice_bob_key'], None)
     alice['connection_request'] = {
@@ -119,7 +119,7 @@ The following assumes you have a way to transmit data between agents, for exampl
     Send the connection request dictionary to Bob in your chosen manner.
 
 2. Bob receives the connection request and sends an anoncrypted connection response to Alice.
-    ```
+    ```python
     bob['alice_did'], bob['alice_key'] = await did.create_and_store_my_did(bob['wallet'], "{}")
     bob['alice_bob_verkey'] = await did.key_for_did(pool_['handle'], bob['wallet'], connection_request['did']) # Use Alice's pool handle here to work cross-pool.
     bob['connection_response'] = json.dumps({
@@ -132,7 +132,7 @@ The following assumes you have a way to transmit data between agents, for exampl
     Send the connection response bytes to Alice in your chosen manner.
     
 3. Alice receives the connection response, storing Bob's verification key.
-    ```
+    ```python
     alice['connection_response'] = json.loads((await crypto.anon_decrypt(alice['wallet'], alice['bob_key'], anoncrypted_connection_response)).decode("utf-8"))
     assert alice['connection_request']['nonce'] == alice['connection_response']['nonce'] # Check nonce is the one you sent!
     await send_nym(alice['pool'], alice['wallet'], alice['did'], alice['connection_response']['did'], alice['connection_response']['verkey'], None)
@@ -143,7 +143,7 @@ A secure channel has now been established. Any further messages from Bob to Alic
 For a full Onboarding, e.g. using Steward Alice to onboard Bob, simply add two steps:
 
 4. Bob generates his public DID (_Verinym_ or public key to be stored on the ledger) and sends this to Alice along with his verkey (as he will in all future messages to Alice).
-    ```
+    ```python
     bob['did'], bob['key'] = await did.create_and_store_my_did(bob['wallet'], "{}")
     bob['did_info'] = json.dumps({
         'did': bob['did'],
@@ -154,7 +154,7 @@ For a full Onboarding, e.g. using Steward Alice to onboard Bob, simply add two s
     Send the authcrypted message bytes to Alice in your chosen manner.
 
 5. Steward Alice receives the message, decrypts and registers Bob's DID on the ledger, establishing him as a new trust anchor.
-    ```
+    ```python
     sender_verkey, _, authdecrypted_did_info = await auth_decrypt(alice['wallet'], alice['bob_key'], authcrypted_did_info)
     assert sender_verkey == await did.key_for_did(alice['pool'], alice['wallet'], alice['connection_response']['did'])
     await send_nym(alice['pool'], alice['wallet'], alice['did'], authdecrypted_did_info['did'], authdecrypted_did_info['verkey'], 'TRUST_ANCHOR') # Final parameter sets DID owner's role.
