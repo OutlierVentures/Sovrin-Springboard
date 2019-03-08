@@ -162,6 +162,21 @@ For a full Onboarding, e.g. using Steward Alice to onboard Bob, simply add two s
     From this point Bob is a trust anchor on the ledger and can onboard people in the same way that Alice can.
 
 
+### Connection teardown
+
+Tear down your connections on application exit:
+
+```python
+if 'wallet' in actor:
+    await wallet.close_wallet(actor['wallet'])
+    await wallet.delete_wallet(actor['wallet_config'], actor['wallet_credentials'])
+if await pool.list_pools():
+    await pool.close_pool_ledger(pool_handle)
+    await pool.delete_pool_ledger_config(pool_name)
+actor = {}
+```
+
+
 ## Next steps
 
 For issuing and storing credentials, see `prover_issuer.md`.
