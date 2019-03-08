@@ -52,7 +52,8 @@ import json
     ```
     Send the authcrypted message bytes to the prover in your chosen manner.
 
-2. The prover receives the proof request, constructs a proof and sends it back. In constructing a proof, the prover must specify which attributes are self-attested, which are to be verified with Indy, and which the credential issuer does not know about.
+2. The prover receives the proof request, constructs a proof and sends it back. In constructing a proof,
+    1. The prover must specify which attributes are self-attested, which are to be verified with Indy, and which the credential issuer does not know about.
     ```python
     self_attested_attributes =
     {
@@ -63,6 +64,9 @@ import json
     requested_attributes = [3, 4, 5]
     requested_predicates = [1],
     non_issuer_attributes = [6]
+    ```
+    2. The prover runs a search according to these specifications and gets the relvant entities from the ledger.
+    ```python
     num_attributes_to_search = len(self_attested_attrs) + len(requested_attrs) - len(non_issuer_attributes) 
     num_predicates = len(requested_preds)
     prover['verifier_key_for_prover'], prover['proof_request'], _ = await auth_decrypt(prover['wallet'], prover['verifier_key'], prover['authcrypted_proof_request'])
@@ -83,6 +87,9 @@ import json
         creds_for_proof[value['referent']] = value
     prover['creds_for_proof'] = creds_for_proof
     prover['schemas'], prover['cred_defs'], prover['revoc_states'] = await prover_get_entities_from_ledger(prover['pool'], prover['verifier_did'], prover['creds_for_proof'], prover['name'])
+    ```
+    3. The prover constructs the full proof, composed of the self-attested attributes, requested attributes and requested predicates,
+    ```python
     requested_attrs_dict = {}
     for i in requested_attrs:
         stri = str(i)
