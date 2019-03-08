@@ -12,24 +12,12 @@ error_report() {
 }
 trap 'error_report $LINENO' ERR
 
-get_latest() {
-    if [ ! -d $2 ]; then
-        git clone https://github.com/$1/$2.git --recursive
-        cd $2
-    else
-        cd $2
-        git pull
-    fi
-    cd ..
-}
-
 echo -e "${onyellow}Installing libindy...$endcolor"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    cmake --version || brew install cmake
-    get_latest hyperledger indy-sdk
+    cmake --version || brew install cmake # brew install cmake throws error, not warning if already installed
     curl https://sh.rustup.rs -sSf | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH" # so can use cargo without relog
     brew install pkg-config \
@@ -47,7 +35,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         export OPENSSL_DIR=/usr/local/Cellar/openssl/$version
         break
     done
-    cd indy-sdk/libindy
     cargo build
     export LIBRARY_PATH=$(pwd)/target/debug
     cd ../cli
