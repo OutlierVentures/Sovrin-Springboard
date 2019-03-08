@@ -28,6 +28,7 @@ echo -e "${onyellow}Installing libindy...$endcolor"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    cmake --version || brew install cmake
     get_latest hyperledger indy-sdk
     curl https://sh.rustup.rs -sSf | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH" # so can use cargo without relog
@@ -35,7 +36,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
                  https://raw.githubusercontent.com/Homebrew/homebrew-core/65effd2b617bade68a8a2c5b39e1c3089cc0e945/Formula/libsodium.rb \
                  automake \
                  autoconf \
-                 cmake \
                  openssl \
                  zeromq \
                  zmq
